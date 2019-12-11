@@ -1,0 +1,28 @@
+{% load static i18n %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <style TYPE="text/css">
+        <!--
+        @page {
+            size: a4 portrait;
+            margin: 1cm;
+            margin-top: 28.0cm;
+            margin-bottom: 0cm;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        -->
+        </style>
+    </head>
+    <body>
+        <div class="pageFooter">
+            Pagina {{page_counter}} / {{page_total}}
+        </div>
+    </body>
+</html>

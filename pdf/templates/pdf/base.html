@@ -1,0 +1,35 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+
+        <title>
+            {% block title %}{{ title }}{% endblock title %}
+        </title>
+
+        <style TYPE="text/css">
+        @page {
+            size: a4 portrait;
+            margin-top: 2.5cm;
+            margin-right: 1.5cm;
+            margin-bottom: 2.5cm;
+            margin-left: 1.5cm;
+        }
+
+{{ styles }}
+
+        </style>
+
+        {% block extra_header %}{% endblock extra_header %}
+
+    </head>
+    <body>
+        <div class="pageContent">
+            {% block content %}
+                <div>content goes here</div>
+            {% endblock content %}
+        </div>
+    </body>
+</html>

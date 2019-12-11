@@ -1,0 +1,13 @@
+{% extends "pdf/base.html" %}
+
+
+{% block content %}
+
+    <h1>Test PDF</h1>
+    {% with lines=lines|default:100 %}
+        {% for i in "x"|rjust:lines %}
+            <div>line {{forloop.counter}} ...</div>
+        {% endfor %}
+    {% endwith %}
+
+{% endblock content %}

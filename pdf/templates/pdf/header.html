@@ -1,0 +1,38 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <style TYPE="text/css">
+        <!--
+        @page {
+            size: a4 portrait;
+            margin-top: 1.0cm;
+            margin-right: 1.0cm;
+            margin-bottom: 0.0cm;
+            margin-left: 1.0cm;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            /*
+            font-family: sans;
+            font-size: 16px;
+            line-height: 16px;
+            */
+        }
+        -->
+        </style>
+    </head>
+    <body>
+        <div class="pageHeader">
+            {# <img class="pageLogo" src="http://{{ view.request.get_host }}{% static 'pdf/img/header_left.png' %}"> #}
+            <img class="pageLogo" src="static://pdf/img/header_left.png">
+            {# <img class="pageLogo" src="{{STATIC_ROOT}}/pdf/img/header_left.png"> #}
+            <div class="pageTitle">{{print_date|date:'d/m/Y H:i:s'}} - {{title}}</div>
+        </div>
+    </body>
+</html>
+
