@@ -3,6 +3,10 @@
 History
 =======
 
+v0.0.2
+------
+* Some cleanup
+
 v0.0.1
 ------
 * Project start
