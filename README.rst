@@ -114,13 +114,13 @@ You can copy these sample files in your local folders for any required customiza
     pdf
     ├── static
     │   └── pdf
-    │       └── img
+    │       └── images
     │           └── header_left.png
     └── templates
         └── pdf
             ├── base.html
             ├── base_nomargins.html
-            ├── default.css
+            ├── styles.css
             ├── footer.html
             ├── header.html
             └── pages
@@ -132,3 +132,36 @@ Management commands
 
 - build_test_pdf
 
+
+Full customization with templates
+---------------------------------
+
+In your base view class, override template names:
+
+.. code:: python
+
+    class ReportView(PdfView):
+
+        header_template_name = 'reports/header.html'
+        footer_template_name = 'reports/footer.html'
+        styles_template_name = 'reports/styles.css'
+
+Then copy the following default templates into **reports/templates/reports** ::
+
+    pdf
+    └── templates
+        └── pdf
+            ├── base.html
+            ├── base_nomargins.html
+            ├── styles.css
+            ├── footer.html
+            └── header.html
+
+and add you customizations.
+
+How to insert a page break
+--------------------------
+
+.. code:: html
+
+    <p style="page-break-before: always" ></p>

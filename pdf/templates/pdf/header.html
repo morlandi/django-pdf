@@ -28,9 +28,7 @@
     </head>
     <body>
         <div class="pageHeader">
-            {# <img class="pageLogo" src="http://{{ view.request.get_host }}{% static 'pdf/img/header_left.png' %}"> #}
-            <img class="pageLogo" src="static://pdf/img/header_left.png">
-            {# <img class="pageLogo" src="{{STATIC_ROOT}}/pdf/img/header_left.png"> #}
+            <img class="pageLogo" src="static://pdf/images/header_left.png">
             <div class="pageTitle">{{print_date|date:'d/m/Y H:i:s'}} - {{title}}</div>
         </div>
     </body>

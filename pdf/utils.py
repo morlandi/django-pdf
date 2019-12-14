@@ -74,7 +74,7 @@ def get_pdf_styles(context, styles_template_name):
     """
     Render stylesheet from default template + (optional) custom template
     """
-    styles = render_to_string('pdf/default.css', context)
+    styles = render_to_string('pdf/styles.css', context)
     if styles_template_name:
         styles += render_to_string(styles_template_name, context)
     return styles

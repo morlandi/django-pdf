@@ -1,0 +1,54 @@
+{# ----- debug only ---- #}
+{% if debug %}
+.pageContent,
+.pageHeader,
+.pageFooter {
+    border: 1px solid #f99;
+}
+{% endif %}
+{# ----- end of debug only ---- #}
+
+
+{# ----- html only ---- #}
+{% if format == 'html' %}
+body {
+    background-color: #555;
+}
+
+.pageContent {
+    border: 2px solid #000;
+    background-color: #fff;
+    margin: 60px;
+    padding: 80px;
+    box-shadow: 10px 10px 10px #222;
+}
+{% endif %}
+{# ----- end of html only ---- #}
+
+
+body {
+    background-color: #fff;
+    padding: 0;
+    margin: 0;
+}
+
+.pageHeader {
+    text-align: center;
+}
+
+.pageHeader .pageLogo {
+    float: left;
+    height: 60px;
+}
+
+.pageHeader .pageTitle {
+    float: right;
+    color: #999;
+}
+
+.pageFooter {
+    text-align: center;
+    color: #999;
+    border-top: 1px solid #999;
+    padding-top: 10px;
+}
