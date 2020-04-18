@@ -165,3 +165,66 @@ How to insert a page break
 .. code:: html
 
     <p style="page-break-before: always" ></p>
+
+
+Adding Weasyprint to your project
+---------------------------------
+
+Add `weasyprint` to your requirements::
+
+    WeasyPrint==51
+
+and optionally to your LOGGING setting::
+
+    LOGGING = {
+        ...
+        'loggers': {
+            ...
+            'weasyprint': {
+                'handlers': ['console'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+        },
+    }
+
+Deployment:
+
+1) Install Courier fonts for PDF rendering
+
+::
+
+    # You can verify the available fonts as follows:
+    #    # fc-list
+    - name: Install Courier font for PDF rendering
+        become: true
+        become_user: root
+        copy:
+            src: deployment/project/courier.ttf
+            dest: /usr/share/fonts/truetype/courier/
+
+The font file can be downloaded here:
+
+`courier.ttf <resources/fonts/courier.ttf>`_
+
+2) You might also need to install the following packages:
+
+::
+
+    #weasyprint_packages:
+    - libffi-dev          # http://weasyprint.readthedocs.io/en/latest/install.html#linux
+    - python-cffi         # http://weasyprint.readthedocs.io/en/latest/install.html#linux
+    - python-dev          # http://weasyprint.readthedocs.io/en/latest/install.html#linux
+    - python-pip          # http://weasyprint.readthedocs.io/en/latest/install.html#linux
+    - python-lxml         # http://weasyprint.readthedocs.io/en/latest/install.html#linux
+    - libcairo2           # http://weasyprint.readthedocs.io/en/latest/install.html#linux
+    - libpango1.0-0       # http://weasyprint.readthedocs.io/en/latest/install.html#linux
+    - libgdk-pixbuf2.0-0  # http://weasyprint.readthedocs.io/en/latest/install.html#linux
+    - shared-mime-info    # http://weasyprint.readthedocs.io/en/latest/install.html#linux
+    - libxml2-dev         # http://stackoverflow.com/questions/6504810/how-to-install-lxml-on-ubuntu#6504860
+    - libxslt1-dev        # http://stackoverflow.com/questions/6504810/how-to-install-lxml-on-ubuntu#6504860
+
+For an updated list, check here:
+
+https://weasyprint.readthedocs.io/en/latest/install.html#linux
+

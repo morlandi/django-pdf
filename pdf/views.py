@@ -30,7 +30,13 @@ class PdfView(TemplateView):
 
     debug = False
     format = 'pdf'
-    print_date = None
+    _print_date = None
+
+    @property
+    def print_date(self):
+        if self._print_date is None:
+            self._print_date = timezone.now()
+        return self._print_date
 
     def get_context_data(self, **kwargs):
         try:
@@ -43,7 +49,7 @@ class PdfView(TemplateView):
             self.format = 'pdf'
         context = super(PdfView, self).get_context_data(**kwargs)
         self.for_download = context.pop('for_download', False)
-        self.print_date = timezone.now()
+        #self.print_date = timezone.now()
 
         # Remove <view> from context to make sure all templates are generic
         context.pop('view', None)
@@ -51,6 +57,12 @@ class PdfView(TemplateView):
         return context
 
     def build_filename(self, extension="pdf"):
+        """
+        Provide a stardard filename, build using the print datetime
+        and the slugified view title;
+        For example:
+            '2020-04-17_19-14-55__test.pdf'
+        """
         filename = timezone.localtime(self.print_date).strftime('%Y-%m-%d_%H-%M-%S__') + slugify(self.title)
         if extension:
             filename += '.' + extension
@@ -74,7 +86,7 @@ class PdfView(TemplateView):
             'debug':self.debug,
             'format':self.format,
             'title':self.title,
-            'print_date':self.print_date,
+            'print_date': self.print_date,
             'page_total': 1,
             'page_counter': 1,
         })
@@ -95,20 +107,36 @@ class PdfView(TemplateView):
 
     def build_pdf_response(self, context):
         response = HttpResponse(content_type='application/pdf')
+        base_url = self.request.build_absolute_uri()
+        self.render_to_stream(base_url, context, response)
+        return response
+
+    def render_to_stream(self, base_url, extra_context, output):
+        """
+        Build the PDF document and save in into "ouput" stream.
+
+        Automatically called when the view is invoked via HTTP (unless self.format == 'html'),
+        but you can also call it explicitly from a background task:
+
+            view = PdfTestView()
+            context = view.get_context_data()
+            with open(filepath, 'wb') as f:
+                view.render_to_stream('', context, f)
+
+        """
         build_pdf_document(
-            base_url=self.request.build_absolute_uri(),
+            base_url=base_url,
             debug=self.debug,
             title=self.title,
             print_date=self.print_date,
-            extra_context=context,
+            extra_context=extra_context,
             styles_template_name=self.styles_template_name,
             body_template_name=self.body_template_name,
             header_template_name=self.header_template_name,
             footer_template_name=self.footer_template_name,
-            output=response,
+            output=output,
             format=self.format,
         )
-        return response
 
 
 ################################################################################
