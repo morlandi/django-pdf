@@ -127,10 +127,67 @@ You can copy these sample files in your local folders for any required customiza
                 ├── test.css
                 └── test.html
 
-Management commands
--------------------
+Building a PDF document from a background process
+-------------------------------------------------
 
-- build_test_pdf
+A `PdfView.render_to_stream(self, base_url, extra_context, output)` for this purpose:
+
+.. code:: python
+
+    def render_to_stream(self, base_url, extra_context, output):
+        """
+        Build the PDF document and save in into "ouput" stream.
+
+        Automatically called when the view is invoked via HTTP (unless self.format == 'html'),
+        but you can also call it explicitly from a background task:
+
+            view = PdfTestView()
+            context = view.get_context_data()
+            with open(filepath, 'wb') as f:
+                view.render_to_stream('', context, f)
+        """
+
+A sample management command to build a PDF document outside the HTML request/response
+cycle is available here:
+
+`pdf/management/commands/build_test_pdf.py`_
+
+
+Providing "extra_context" parameters
+------------------------------------
+
+Supply context parameters either in urlpattern, or invoking get_context_data():
+
+from `urls.py`:
+
+.. code:: python
+
+    urlpatterns = [
+        path('daily/print/', views.ReportDailyView.as_view(), {'exclude_inactives': False}, name="daily-print"),
+    ]
+
+from a background task:
+
+.. code:: python
+
+    from django.core.files.base import ContentFile
+
+    # Create a View to work with
+    from reports.views import ReportDailyView
+    view = ReportDailyView()
+    context = view.get_context_data(
+        exclude_inactives=task.exclude_inactives,
+    )
+
+    # Create empty file as result
+    filename = view.build_filename(extension="pdf")
+    task.result.save(filename, ContentFile(''))
+
+    # Open and write result
+    filepath = task.result.path
+
+    with open(filepath, 'wb') as f:
+        view.render_to_stream('', context, f)
 
 
 Full customization with templates
