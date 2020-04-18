@@ -130,7 +130,7 @@ You can copy these sample files in your local folders for any required customiza
 Building a PDF document from a background process
 -------------------------------------------------
 
-A `PdfView.render_to_stream(self, base_url, extra_context, output)` for this purpose:
+A `PdfView.render_to_stream(self, base_url, extra_context, output)` method is supplied for this purpose:
 
 .. code:: python
 
@@ -150,13 +150,13 @@ A `PdfView.render_to_stream(self, base_url, extra_context, output)` for this pur
 A sample management command to build a PDF document outside the HTML request/response
 cycle is available here:
 
-`pdf/management/commands/build_test_pdf.py`_
+`pdf/management/commands/build_test_pdf.py <./pdf/management/commands/build_test_pdf.py>`_
 
 
 Providing "extra_context" parameters
 ------------------------------------
 
-Supply context parameters either in urlpattern, or invoking get_context_data():
+Supply context parameters either in the urlpattern, or invoking get_context_data():
 
 from `urls.py`:
 
