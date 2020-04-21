@@ -80,7 +80,10 @@ class PdfView(TemplateView):
         return response
 
     def build_html_response(self, context):
+        html = self.render_as_html_to_string(context)
+        return HttpResponse(html)
 
+    def render_as_html_to_string(self, context, custom_template=None):
         html = ''
         context.update({
             'debug':self.debug,
@@ -94,7 +97,13 @@ class PdfView(TemplateView):
         context.update({
             'styles': styles,
         })
-        for template_name in [self.header_template_name, self.body_template_name, self.footer_template_name, ]:
+
+        if custom_template is not None:
+            templates = [custom_template, ]
+        else:
+            templates = [self.header_template_name, self.body_template_name, self.footer_template_name, ]
+
+        for template_name in templates:
             template = get_template(template_name) if template_name else None
             if template:
                 html += template.render(context)
@@ -102,16 +111,15 @@ class PdfView(TemplateView):
         # Fix unfetched assets
         html = html.replace('static://', '/static/')
         html = html.replace('media://', '/media/')
-
-        return HttpResponse(html)
+        return html
 
     def build_pdf_response(self, context):
         response = HttpResponse(content_type='application/pdf')
         base_url = self.request.build_absolute_uri()
-        self.render_to_stream(base_url, context, response)
+        self.render_as_pdf_to_stream(base_url, context, response)
         return response
 
-    def render_to_stream(self, base_url, extra_context, output):
+    def render_as_pdf_to_stream(self, base_url, extra_context, output):
         """
         Build the PDF document and save in into "ouput" stream.
 
@@ -121,7 +129,7 @@ class PdfView(TemplateView):
             view = PdfTestView()
             context = view.get_context_data()
             with open(filepath, 'wb') as f:
-                view.render_to_stream('', context, f)
+                view.render_as_pdf_to_stream('', context, f)
 
         """
         build_pdf_document(

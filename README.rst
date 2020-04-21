@@ -130,11 +130,11 @@ You can copy these sample files in your local folders for any required customiza
 Building a PDF document from a background process
 -------------------------------------------------
 
-A `PdfView.render_to_stream(self, base_url, extra_context, output)` method is supplied for this purpose:
+A `PdfView.render_as_pdf_to_stream(self, base_url, extra_context, output)` method is supplied for this purpose:
 
 .. code:: python
 
-    def render_to_stream(self, base_url, extra_context, output):
+    def render_as_pdf_to_stream(self, base_url, extra_context, output):
         """
         Build the PDF document and save in into "ouput" stream.
 
@@ -144,7 +144,7 @@ A `PdfView.render_to_stream(self, base_url, extra_context, output)` method is su
             view = PdfTestView()
             context = view.get_context_data()
             with open(filepath, 'wb') as f:
-                view.render_to_stream('', context, f)
+                view.render_as_pdf_to_stream('', context, f)
         """
 
 A sample management command to build a PDF document outside the HTML request/response
@@ -187,7 +187,7 @@ from a background task:
     filepath = task.result.path
 
     with open(filepath, 'wb') as f:
-        view.render_to_stream('', context, f)
+        view.render_as_pdf_to_stream('', context, f)
 
 
 Full customization with templates

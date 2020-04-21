@@ -30,7 +30,7 @@ class Command(BaseCommand):
             os.remove(filepath)
 
         with open(filepath, 'wb') as f:
-            view.render_to_stream('', context, f)
+            view.render_as_pdf_to_stream('', context, f)
 
             # build_pdf_document(
             #     base_url='',
