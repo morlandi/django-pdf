@@ -33,6 +33,7 @@ class Counter:
 def url_fetcher(url):
 
     import weasyprint
+    original_url = url
     url = url
 
     try:
@@ -60,7 +61,7 @@ def url_fetcher(url):
                 contents = asset.read()
             return dict(string=contents)
     except Exception as e:
-        trace('Error fetching "%s"' % url)
+        trace('Error fetching "%s"' % original_url)
         trace(str(e))
         raise
 

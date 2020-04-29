@@ -48,6 +48,9 @@ In your urls, add:
         path('reports/', include('reports.urls', namespace='reports')),
         ...
 
+You might want copy the default templates from 'pdf/templates/pdf' to 'reports/templates/reports'
+for any required customization.
+
 A sample report
 ---------------
 
@@ -75,11 +78,18 @@ file `reports/views.py`:
 
     class ReportView(PdfView):
 
-        my_custom_data = None
+        #my_custom_data = None
+        header_template_name = 'pdf/header.html'
+        footer_template_name = 'pdf/footer.html'
+        styles_template_name = 'pdf/styles.css'
 
         def get_context_data(self, **kwargs):
             context = super(ReportView, self).get_context_data(**kwargs)
-            self.my_custom_data = context.pop('my_custom_data', None)
+            #self.my_custom_data = context.pop('my_custom_data', None)
+            # context.update({
+            #     'footer_line_1': config.REPORT_FOOTER_LINE_1,
+            #     'footer_line_2': config.REPORT_FOOTER_LINE_2,
+            # })
             return context
 
 
@@ -90,6 +100,18 @@ file `reports/views.py`:
         # footer_template_name = None
         title = "Report Test"
 
+        def get_context_data(self, **kwargs):
+            context = super().get_context_data(**kwargs)
+            # Add your stuff here ...
+            context.update({
+                ...
+            })
+            return context
+
+
+or **replace `pdf/header.html` with `reports/header.html`**, etc ... when using
+custom templates.
+
 You can now download the PDF document at:
 
     http://127.0.0.1:8000/reports/test/download/
@@ -97,6 +119,10 @@ You can now download the PDF document at:
 or open it with the browser at:
 
     http://127.0.0.1:8000/reports/test/print/
+
+You can inspect the HTML used for PDF rendering by appending `?format=html` to the url:
+
+    http://127.0.0.1:8000/reports/test/print/?format=html
 
 .. image:: screenshots/001.png
 
