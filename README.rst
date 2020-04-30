@@ -48,7 +48,7 @@ In your urls, add:
         path('reports/', include('reports.urls', namespace='reports')),
         ...
 
-You might want copy the default templates from 'pdf/templates/pdf' to 'reports/templates/reports'
+You might want to copy the default templates from 'pdf/templates/pdf' to 'reports/templates/reports'
 for any required customization.
 
 A sample report
@@ -111,6 +111,24 @@ file `reports/views.py`:
 
 or **replace `pdf/header.html` with `reports/header.html`**, etc ... when using
 custom templates.
+
+file `pdf/pages/test.html`:
+
+.. code:: html
+
+    {% extends "pdf/base.html" %}
+
+    {% block content %}
+
+        <h1>Test PDF</h1>
+        {% with lines=lines|default:100 %}
+            {% for i in "x"|rjust:lines %}
+                <div>line {{forloop.counter}} ...</div>
+            {% endfor %}
+        {% endwith %}
+
+    {% endblock content %}
+
 
 You can now download the PDF document at:
 
