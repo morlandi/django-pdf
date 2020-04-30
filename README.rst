@@ -49,7 +49,7 @@ In your urls, add:
         ...
 
 You might want to copy the default templates from 'pdf/templates/pdf' to 'reports/templates/reports'
-for any required customization.
+for any required customization; see `Customizing the templates`_ below
 
 A sample report
 ---------------
@@ -145,32 +145,6 @@ You can inspect the HTML used for PDF rendering by appending `?format=html` to t
 .. image:: screenshots/001.png
 
 
-Source HTML and CSS fine-tuning
--------------------------------
-
-    http://127.0.0.1:8000/reports/test/print/?format=html&debug=1
-
-Default files
--------------
-
-You can copy these sample files in your local folders for any required customization::
-
-    pdf
-    ├── static
-    │   └── pdf
-    │       └── images
-    │           └── header_left.png
-    └── templates
-        └── pdf
-            ├── base.html
-            ├── base_nomargins.html
-            ├── styles.css
-            ├── footer.html
-            ├── header.html
-            └── pages
-                ├── test.css
-                └── test.html
-
 Building a PDF document from a background process
 -------------------------------------------------
 
@@ -234,10 +208,30 @@ from a background task:
         view.render_as_pdf_to_stream('', context, f)
 
 
-Full customization with templates
----------------------------------
+Customizing the templates
+-------------------------
 
-In your base view class, override template names:
+These sample files::
+
+    pdf
+    ├── static
+    │   └── pdf
+    │       └── images
+    │           └── header_left.png
+    └── templates
+        └── pdf
+            ├── base.html
+            ├── base_nomargins.html
+            ├── styles.css
+            ├── footer.html
+            ├── header.html
+            └── pages
+                ├── test.css
+                └── test.html
+
+
+can be copied into your app's local folder `reports/templates/reports`,
+and used for any required customization::
 
 .. code:: python
 
@@ -246,19 +240,6 @@ In your base view class, override template names:
         header_template_name = 'reports/header.html'
         footer_template_name = 'reports/footer.html'
         styles_template_name = 'reports/styles.css'
-
-Then copy the following default templates into **reports/templates/reports** ::
-
-    pdf
-    └── templates
-        └── pdf
-            ├── base.html
-            ├── base_nomargins.html
-            ├── styles.css
-            ├── footer.html
-            └── header.html
-
-and add you customizations.
 
 How to insert a page break
 --------------------------
