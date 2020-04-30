@@ -231,7 +231,7 @@ These sample files::
 
 
 can be copied into your app's local folder `reports/templates/reports`,
-and used for any required customization::
+and used for any required customization:
 
 .. code:: python
 
