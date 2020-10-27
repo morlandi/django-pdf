@@ -310,3 +310,75 @@ For an updated list, check here:
 
 https://weasyprint.readthedocs.io/en/latest/install.html#linux
 
+Customizations examples
+=======================
+
+Add a custom logo
+-----------------
+
+For example you can save a custom bitmap with django-constance:
+
+.. code :: python
+
+    CONSTANCE_ADDITIONAL_FIELDS = {
+        'image_field': ['django.forms.ImageField', {}]
+    }
+
+    CONSTANCE_CONFIG = {
+        ...
+        'PDF_RECORD_LOGO': ('', 'Image for PDF logo', 'image_field'),
+    }
+
+then in your **header.html** template:
+
+.. code:: html
+
+    <body>
+        <div class="pageHeader">
+            <img class="pageLogo" title="{{ PDF_RECORD_LOGO }}" src="media://{{ PDF_RECORD_LOGO }}">
+            <div class="pageTitle">{{print_date|date:'d/m/Y H:i:s'}} - {{title}}</div>
+        </div>
+    </body>
+
+Embed images from media (ImageFields)
+-------------------------------------
+
+If Image is a Model to keep the images you want to embed, use a templatetag like this:
+
+.. code:: python
+
+    @register.filter
+    def local_image_url(image_slug):
+        """
+        Example:
+            "/backend/images/signature_mo.png"
+        """
+
+        url = ''
+        try:
+            image = Image.objects.get(slug=image_slug)
+            if bool(image.image):
+                url = image.image.url.lstrip(settings.MEDIA_URL)
+        except Image.DoesNotExist as e:
+            pass
+
+        if len(url):
+            url = 'media://' + url
+        else:
+            url = 'static://reports/images/placeholder.png'
+
+        return url
+
+then, in your templates:
+
+.. code:: html
+
+    <img class="pageLogoMiddle" src="{{'report-header-middle'|local_image_url}}">
+
+where `'report-header-middle'` is the slug used to select the image.
+
+
+
+
+
+
