@@ -426,7 +426,7 @@ Use the helper function pdf.plot.build_plot_from_data() to plot your data:
 
 .. code:: python
 
-    def build_plot_from_data(data, as_base64=False, plot_colors=None, dpi=300):
+    def build_plot_from_data(data, chart_type='line', as_base64=False, plot_colors=None, dpi=300):
         """
         Build a plot from given "data";
         Returns: a bitmap of the plot
@@ -435,13 +435,26 @@ Use the helper function pdf.plot.build_plot_from_data() to plot your data:
             matplotlib
 
         Keyword arguments:
-        data -- see sample_plot_data() for an example; if None, uses sample_plot_data()
+        data -- see sample_line_plot_data() for an example; if None, uses sample_line_plot_data()
         as_base64 -- if True, returns the base64 encoding of the bitmap
         plot_colors -- an array of color codes to cycle over; if None, uses default colors
-        dpi -- bitmpa resolution
-        """
+        dpi -- bitmap resolution
 
-TODO: MUCH MORE DETAILS NEEDED HERE.
+        Data layout
+        ===========
+
+        chart_type      data
+        --------------- ------------------------------------------------------------
+        'line'          {
+                            'labels': ["A", "B", ...],
+                            'x' [x1, x2, ...],
+                            'columns': [
+                                [ay1, ay2, ...],
+                                [by1, by2, ...],
+                            ]
+                        }
+        --------------- ------------------------------------------------------------
+        """
 
 then, in the view, add the resulting bitmap to context:
 
@@ -451,7 +464,7 @@ then, in the view, add the resulting bitmap to context:
         context = super().get_context_data(**kwargs)
         try:
             from .plot import build_plot_from_data
-            plot_image = build_plot_from_data(data=None, as_base64=True)
+            plot_image = build_plot_from_data(data=None, chart_type='line', as_base64=True)
             context.update({
                 'plot_image': plot_image,
             })

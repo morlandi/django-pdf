@@ -174,7 +174,7 @@ class PdfTestView(PdfView):
         context = super().get_context_data(**kwargs)
         try:
             from .plot import build_plot_from_data
-            plot_image = build_plot_from_data(data=None, as_base64=True)
+            plot_image = build_plot_from_data(data=None, chart_type='line', as_base64=True)
             context.update({
                 'plot_image': plot_image,
             })

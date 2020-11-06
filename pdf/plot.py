@@ -6,7 +6,7 @@ from PIL import Image as PILImage
 import datetime
 
 
-def build_plot_from_data(data, as_base64=False, plot_colors=None, dpi=300):
+def build_plot_from_data(data, chart_type='line', as_base64=False, plot_colors=None, dpi=300):
     """
     Build a plot from given "data";
     Returns: a bitmap of the plot
@@ -15,15 +15,30 @@ def build_plot_from_data(data, as_base64=False, plot_colors=None, dpi=300):
         matplotlib
 
     Keyword arguments:
-    data -- see sample_plot_data() for an example; if None, uses sample_plot_data()
+    data -- see sample_line_plot_data() for an example; if None, uses sample_line_plot_data()
     as_base64 -- if True, returns the base64 encoding of the bitmap
     plot_colors -- an array of color codes to cycle over; if None, uses default colors
-    dpi -- bitmpa resolution
+    dpi -- bitmap resolution
+
+    Data layout
+    ===========
+
+    chart_type      data
+    --------------- ------------------------------------------------------------
+    'line'          {
+                        'labels': ["A", "B", ...],
+                        'x' [x1, x2, ...],
+                        'columns': [
+                            [ay1, ay2, ...],
+                            [by1, by2, ...],
+                        ]
+                    }
+    --------------- ------------------------------------------------------------
     """
 
 
     if data == None:
-        data = sample_plot_data()
+        data = sample_line_plot_data()
 
     if False:
         image_content = build_random_image()
@@ -32,7 +47,10 @@ def build_plot_from_data(data, as_base64=False, plot_colors=None, dpi=300):
         try:
             with io.BytesIO() as buffer:
 
-                _build_plot_image(data, buffer, plot_colors=plot_colors, dpi=dpi)
+                if chart_type == 'line':
+                    _build_line_plot_image(data, buffer, plot_colors=plot_colors, dpi=dpi)
+                else:
+                    raise Exception('Unknown chart_type "%s"' % chart_type)
 
                 #buffer.seek(0)
                 pil_image = PILImage.open(buffer)
@@ -40,7 +58,7 @@ def build_plot_from_data(data, as_base64=False, plot_colors=None, dpi=300):
                     pil_image.save(output, format="PNG")
                     image_content = output.getvalue()
         except Exception as e:
-            print('ERROR in build_plot_from_data():' + str(e))
+            print('ERROR in build_plot_from_data(): ' + str(e))
             raise
 
     if as_base64:
@@ -49,7 +67,7 @@ def build_plot_from_data(data, as_base64=False, plot_colors=None, dpi=300):
     return image_content
 
 
-def sample_plot_data():
+def sample_line_plot_data():
     n = 100
     data = {
         'labels': ["sin", "cos"],
@@ -118,7 +136,7 @@ def _plot_color(plot_colors, index):
     return color_code
 
 
-def _build_plot_image(plot_data, output_buffer, plot_colors, dpi):
+def _build_line_plot_image(plot_data, output_buffer, plot_colors, dpi):
     """
     Read rectangular data from given "input_filename" CSV file, and build a bitmap with the plot;
     the result is saved in "output_filename"
