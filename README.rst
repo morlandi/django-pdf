@@ -6,6 +6,10 @@ A Django class-based view helper to generate PDF with WeasyPrint.
 
 Requires: `WeasyPrint <https://github.com/Kozea/WeasyPrint>`_
 
+Optional requirements:
+
+- matplotlib (to render plots)
+
 .. contents::
 
 .. sectnum::
@@ -64,7 +68,7 @@ mapped to the PdfTestView; then, visit:
 You can copy the following to your own app to have an initial working view
 to start working with:
 
-file `reporsts/urls.py`:
+file `reports/urls.py`:
 
 .. code:: python
 
@@ -405,7 +409,69 @@ then, in your templates:
 where `'report-header-middle'` is the slug used to select the image.
 
 
+Adding a plot to the PDF documents
+==================================
+
+In the frontend, you have many javascript libraries available to plot data and
+draw fancy charts.
+
+This doesn't help you in embedding a plot in a PDF documents built offline, however;
+in this case, you need to build an image server side.
+
+An helper function has been included in this app for that purpose; to use it, **matplotlib**
+must be installed.
 
 
+Use the helper function pdf.plot.build_plot_from_data() to plot your data:
 
+.. code:: python
 
+    def build_plot_from_data(data, as_base64=False, plot_colors=None, dpi=300):
+        """
+        Build a plot from given "data";
+        Returns: a bitmap of the plot
+
+        Requires:
+            matplotlib
+
+        Keyword arguments:
+        data -- see sample_plot_data() for an example; if None, uses sample_plot_data()
+        as_base64 -- if True, returns the base64 encoding of the bitmap
+        plot_colors -- an array of color codes to cycle over; if None, uses default colors
+        dpi -- bitmpa resolution
+        """
+
+TODO: MUCH MORE DETAILS NEEDED HERE.
+
+then, in the view, add the resulting bitmap to context:
+
+.. code:: python
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            from .plot import build_plot_from_data
+            plot_image = build_plot_from_data(data=None, as_base64=True)
+            context.update({
+                'plot_image': plot_image,
+            })
+        except:
+            pass
+        return context
+
+In the template, render it as an embedded image:
+
+.. code:: html
+
+    <style>
+        .plot {
+            border: 1px solid #ccc;
+            width: 18cm;
+            height: 6cm;
+            margin: 1.0cm 0;
+        }
+    </style>
+
+    {% if plot_image %}
+        <img class="plot" src="data:image/png;base64,{{plot_image}}">
+    {% endif %}

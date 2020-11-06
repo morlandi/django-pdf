@@ -7,6 +7,8 @@
 
     {% if plot_image %}
         <img class="plot" src="data:image/png;base64,{{plot_image}}">
+    {% else %}
+        <h3 style="color: red;">Rendering a plot requires <b>matplotlib</b></h3>
     {% endif %}
 
     {% with lines=lines|default:100 %}
