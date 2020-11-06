@@ -5,8 +5,8 @@ History
 
 v0.0.5
 ------
+* Support for plot added (only "line" chart type, at the moment; requires matplotlib)
 * Customization examples added to readme
-* Support for plot added (requires matplotlib)
 
 v0.0.4
 ------
