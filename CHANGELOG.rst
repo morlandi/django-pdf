@@ -3,6 +3,11 @@
 History
 =======
 
+v0.0.5
+------
+* Customization examples added to readme
+* Support for plot added (requires matplotlib)
+
 v0.0.4
 ------
 * render_to_stream() renamed as render_as_pdf_to_stream()

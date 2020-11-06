@@ -169,3 +169,15 @@ class PdfTestView(PdfView):
     # header_template_name = None
     # footer_template_name = None
     title = "Test"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            from .plot import build_plot_from_data
+            plot_image = build_plot_from_data(data=None, as_base64=True)
+            context.update({
+                'plot_image': plot_image,
+            })
+        except:
+            pass
+        return context

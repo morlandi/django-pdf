@@ -4,6 +4,11 @@
 {% block content %}
 
     <h1>Test PDF</h1>
+
+    {% if plot_image %}
+        <img class="plot" src="data:image/png;base64,{{plot_image}}">
+    {% endif %}
+
     {% with lines=lines|default:100 %}
         {% for i in "x"|rjust:lines %}
             <div>line {{forloop.counter}} ...</div>

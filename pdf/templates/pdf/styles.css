@@ -52,3 +52,10 @@ body {
     border-top: 1px solid #999;
     padding-top: 10px;
 }
+
+.plot {
+    border: 1px solid #ccc;
+    width: 18cm;
+    height: 6cm;
+    margin: 1.0cm 0;
+}

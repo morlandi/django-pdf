@@ -54,14 +54,24 @@ for any required customization; see `Customizing the templates`_ below
 A sample report
 ---------------
 
-file `reports/urls.py`:
+A test view has been provided to render a sample report for demonstration purposes.
+
+In your main urls, include pdf/urls.py, where the required end-point have been
+mapped to the PdfTestView; then, visit:
+
+    http://127.0.0.1:8000/pdf/test/print/
+
+You can copy the following to your own app to have an initial working view
+to start working with:
+
+file `reporsts/urls.py`:
 
 .. code:: python
 
     from django.urls import path
     from . import views
 
-    app_name = 'reports'
+    app_name = 'pdf'
 
     urlpatterns = [
         path('test/print/', views.ReportTestView.as_view(), {'for_download': False, 'lines': 200, }, name="test-print"),
@@ -102,17 +112,29 @@ file `reports/views.py`:
 
         def get_context_data(self, **kwargs):
             context = super().get_context_data(**kwargs)
+
+            # Add a plot
+            try:
+                from .plot import build_plot_from_data
+                plot_image = build_plot_from_data(data=None, as_base64=True)
+                context.update({
+                    'plot_image': plot_image,
+                })
+            except:
+                pass
+
             # Add your stuff here ...
             context.update({
                 ...
             })
+
             return context
 
 
 or **replace `pdf/header.html` with `reports/header.html`**, etc ... when using
 custom templates.
 
-file `pdf/pages/test.html`:
+file `reports/pages/test.html`:
 
 .. code:: html
 
@@ -121,6 +143,11 @@ file `pdf/pages/test.html`:
     {% block content %}
 
         <h1>Test PDF</h1>
+
+        {% if plot_image %}
+            <img class="plot" src="data:image/png;base64,{{plot_image}}">
+        {% endif %}
+
         {% with lines=lines|default:100 %}
             {% for i in "x"|rjust:lines %}
                 <div>line {{forloop.counter}} ...</div>
