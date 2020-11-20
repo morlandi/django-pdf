@@ -3,6 +3,10 @@
 History
 =======
 
+v.....
+------
+* Support for 'line', 'bar', 'horizontalBar', 'pie', 'line', 'doughnut' plots
+
 v0.0.5
 ------
 * Support for plot added (only "line" chart type, at the moment; requires matplotlib)

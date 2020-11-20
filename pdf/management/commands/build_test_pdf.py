@@ -79,7 +79,6 @@ python manage.py build_test_pdf test.png -o --plot_type doughnut -p '{"labels": 
         if kwargs['plot_font']:
             self.select_font(kwargs['plot_font'])
 
-
         # Use either user supplied filepath, or the a default name provided by the view
         expected_file_extension = '.pdf'
         filepath = kwargs['filepath']

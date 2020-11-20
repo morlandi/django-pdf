@@ -173,7 +173,7 @@ You can inspect the HTML used for PDF rendering by appending `?format=html` to t
 
     http://127.0.0.1:8000/reports/test/print/?format=html
 
-.. image:: screenshots/001.png
+.. image:: screenshots/pdf_sample.png
 
 
 Building a PDF document from a background process
@@ -421,12 +421,13 @@ in this case, you need to build an image server side.
 An helper function has been included in this app for that purpose; to use it, **matplotlib**
 must be installed.
 
-
-Use the helper function pdf.plot.build_plot_from_data() to plot your data:
+At the moment, it is more a POC then a complete solution; you can either use it
+from the package, or copy the source file `pdf/plot.py` in your project and use
+`build_plot_from_data()` as a starting point:
 
 .. code:: python
 
-    def build_plot_from_data(data, chart_type='line', as_base64=False, plot_colors=None, dpi=300):
+    def build_plot_from_data(data, chart_type='line', as_base64=False, dpi=300, ylabel=''):
         """
         Build a plot from given "data";
         Returns: a bitmap of the plot
@@ -436,24 +437,49 @@ Use the helper function pdf.plot.build_plot_from_data() to plot your data:
 
         Keyword arguments:
         data -- see sample_line_plot_data() for an example; if None, uses sample_line_plot_data()
+        chart_type -- 'line', 'bar', 'horizontalBar', 'pie', 'line', 'doughnut',
         as_base64 -- if True, returns the base64 encoding of the bitmap
-        plot_colors -- an array of color codes to cycle over; if None, uses default colors
         dpi -- bitmap resolution
+        ylabel -- optional label for Y axis
 
         Data layout
         ===========
 
-        chart_type      data
-        --------------- ------------------------------------------------------------
-        'line'          {
-                            'labels': ["A", "B", ...],
-                            'x' [x1, x2, ...],
-                            'columns': [
-                                [ay1, ay2, ...],
-                                [by1, by2, ...],
-                            ]
-                        }
-        --------------- ------------------------------------------------------------
+        Similar to django-jchart:
+
+        - either (shared values for x)
+
+            {
+                "labels": ["A", "B", ...],
+                "x" [x1, x2, ...],
+                "columns": [
+                    [ay1, ay2, ...],
+                    [by1, by2, ...],
+                ],
+                "colors": [
+                    "rgba(64, 113, 191, 0.2)",
+                    "rgba(191, 64, 64, 0.0)",
+                    "rgba(26, 179, 148, 0.0)"
+                ]
+            }
+
+        - or
+
+            {
+                "labels": ["A", "B", ..., ],
+                "columns": [
+                    [
+                        {"x": ax1, "y": ay1 },
+                        {"x": ax2, "y": ay2 },
+                        {"x": ax3, "y": ay3 },
+                    ], [
+                        {"x": bx1, "y": by1 },
+                        {"x": bx2, "y": by2 },
+                    ], ...
+                ],
+                "colors": ["transparent", "rgba(121, 0, 0, 0.2)", "rgba(101, 0, 200, 0.2)", ]
+            }
+
         """
 
 then, in the view, add the resulting bitmap to context:
@@ -488,3 +514,16 @@ In the template, render it as an embedded image:
     {% if plot_image %}
         <img class="plot" src="data:image/png;base64,{{plot_image}}">
     {% endif %}
+
+Try it
+------
+
+The management command `build_test_pdf` can be used with the "--plot_data" switch to test the resulting image:
+
+.. code:: bash
+
+    python manage.py build_test_pdf test.png -o -p '{"labels": ["sin", "cos"], "x": [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5], "columns": [[0.0, 9.09, -7.57, -2.79, 9.89, -5.44, -5.37, 9.91, -2.88, -7.51], [20.0, -13.07, -2.91, 16.88, -19.15, 8.16, 8.48, -19.25, 16.68, -2.56]]}' --plot_font Tahoma
+
+|
+
+.. image:: screenshots/plots.png

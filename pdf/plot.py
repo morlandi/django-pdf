@@ -16,23 +16,49 @@ def build_plot_from_data(data, chart_type='line', as_base64=False, dpi=300, ylab
 
     Keyword arguments:
     data -- see sample_line_plot_data() for an example; if None, uses sample_line_plot_data()
+    chart_type -- 'line', 'bar', 'horizontalBar', 'pie', 'line', 'doughnut',
     as_base64 -- if True, returns the base64 encoding of the bitmap
     dpi -- bitmap resolution
+    ylabel -- optional label for Y axis
 
     Data layout
     ===========
 
-    chart_type      data
-    --------------- ------------------------------------------------------------
-    'line'          {
-                        'labels': ["A", "B", ...],
-                        'x' [x1, x2, ...],
-                        'columns': [
-                            [ay1, ay2, ...],
-                            [by1, by2, ...],
-                        ]
-                    }
-    --------------- ------------------------------------------------------------
+    Similar to django-jchart:
+
+    - either (shared values for x)
+
+        {
+            "labels": ["A", "B", ...],
+            "x" [x1, x2, ...],
+            "columns": [
+                [ay1, ay2, ...],
+                [by1, by2, ...],
+            ],
+            "colors": [
+                "rgba(64, 113, 191, 0.2)",
+                "rgba(191, 64, 64, 0.0)",
+                "rgba(26, 179, 148, 0.0)"
+            ]
+        }
+
+    - or
+
+        {
+            "labels": ["A", "B", ..., ],
+            "columns": [
+                [
+                    {"x": ax1, "y": ay1 },
+                    {"x": ax2, "y": ay2 },
+                    {"x": ax3, "y": ay3 },
+                ], [
+                    {"x": bx1, "y": by1 },
+                    {"x": bx2, "y": by2 },
+                ], ...
+            ],
+            "colors": ["transparent", "rgba(121, 0, 0, 0.2)", "rgba(101, 0, 200, 0.2)", ]
+        }
+
     """
 
     if data == None:
@@ -81,13 +107,13 @@ def sample_line_plot_data():
         text = '%.*f' % (decimals, value)
         return float(text)
 
-    n = 10
+    n = 100
     data = {
         'labels': ["sin", "cos"],
         'x': [0.5 * i for i in range(n)],
         'columns': [
-            [real_value(10.0 * math.sin(i*2.0)) for i in range(n)],
-            [real_value(20.0 * math.cos(i*4.0)) for i in range(n)],
+            [real_value(10.0 * math.sin(i/2.0)) for i in range(n)],
+            [real_value(20.0 * math.cos(i/4.0)) for i in range(n)],
         ]
     }
     return data
@@ -270,13 +296,14 @@ def _build_bar_plot_image(plot_data, plot_colors, output_buffer, dpi, ylabel, ho
     plt.savefig(output_buffer)  # , dpi=600)
 
 
-def _build_pie_plot_image(plot_data, plot_colors, output_buffer, dpi, ylabel):
+def pct_func(pct, allvals):
+    #absolute = int(pct/100.*np.sum(allvals))
+    absolute = int(pct/100. * sum(allvals))
+    #return "{:.1f}%\n({:d} g)".format(pct, absolute)
+    return "{:d}\n({:.1f}%)".format(absolute, pct)
 
-    def func(pct, allvals):
-        #absolute = int(pct/100.*np.sum(allvals))
-        absolute = int(pct/100. * sum(allvals))
-        #return "{:.1f}%\n({:d} g)".format(pct, absolute)
-        return "{:d}\n({:.1f}%)".format(absolute, pct)
+
+def _build_pie_plot_image(plot_data, plot_colors, output_buffer, dpi, ylabel):
 
     import matplotlib
     from matplotlib import pyplot as plt
@@ -285,6 +312,7 @@ def _build_pie_plot_image(plot_data, plot_colors, output_buffer, dpi, ylabel):
     # https://github.com/matplotlib/matplotlib/issues/14304#issuecomment-545717061
     matplotlib.use('agg')
 
+    # Adapted from:
     # https://matplotlib.org/3.1.1/gallery/pie_and_polar_charts/pie_and_donut_labels.html
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(8, 6), dpi=dpi, tight_layout=True, subplot_kw=dict(aspect="equal"))
 
@@ -293,12 +321,11 @@ def _build_pie_plot_image(plot_data, plot_colors, output_buffer, dpi, ylabel):
     colors = [_plot_color(plot_colors, index) for index in range(len(values))]
     assert len(values) == len(labels)
     assert len(values) == len(colors)
-
     # values.reverse()
     # labels.reverse()
     # colors.reverse()
 
-    wedges, texts, autotexts = axes.pie(values, autopct=lambda pct: func(pct, values), textprops=dict(color="w"), colors=colors, startangle=90)
+    wedges, texts, autotexts = axes.pie(values, autopct=lambda pct: pct_func(pct, values), textprops=dict(color="w"), colors=colors, startangle=90)
     axes.legend(wedges, labels, title="", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
     plt.setp(autotexts, size=8, weight="bold")
 
@@ -309,6 +336,7 @@ def _build_pie_plot_image(plot_data, plot_colors, output_buffer, dpi, ylabel):
 
 
 def _build_doughnut_plot_image (plot_data, plot_colors, output_buffer, dpi, ylabel):
+
     import matplotlib
     from matplotlib import pyplot as plt
     import numpy as np
@@ -317,13 +345,24 @@ def _build_doughnut_plot_image (plot_data, plot_colors, output_buffer, dpi, ylab
     # https://github.com/matplotlib/matplotlib/issues/14304#issuecomment-545717061
     matplotlib.use('agg')
 
+    # Adapted from:
     # https://matplotlib.org/3.1.1/gallery/pie_and_polar_charts/pie_and_donut_labels.html
-
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(8, 6), dpi=dpi, tight_layout=True, subplot_kw=dict(aspect="equal"))
 
-    recipe = ["225 g flour", "90 g sugar", "1 egg", "60 g butter", "100 ml milk", "1/2 package of yeast"]
-    data = [225, 90, 50, 60, 100, 5]
-    wedges, texts = axes.pie(data, wedgeprops=dict(width=0.5), startangle=-40)
+    values = plot_data['columns'][0]
+    labels = plot_data['x']
+    colors = [_plot_color(plot_colors, index) for index in range(len(values))]
+    assert len(values) == len(labels)
+    assert len(values) == len(colors)
+    wedges, texts, autotexts = axes.pie(
+        values,
+        autopct=lambda pct: pct_func(pct, values),
+        pctdistance=0.75,
+        #labeldistance=1.2,
+        wedgeprops=dict(width=0.5),
+        startangle=-40,
+        colors=colors
+    )
 
     bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=0.72)
     kw = dict(arrowprops=dict(arrowstyle="-"), bbox=bbox_props, zorder=0, va="center")
@@ -335,7 +374,8 @@ def _build_doughnut_plot_image (plot_data, plot_colors, output_buffer, dpi, ylab
         horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
         connectionstyle = "angle,angleA=0,angleB={}".format(ang)
         kw["arrowprops"].update({"connectionstyle": connectionstyle})
-        axes.annotate(recipe[i], xy=(x, y), xytext=(1.35*np.sign(x), 1.4*y), horizontalalignment=horizontalalignment, **kw)
+        #axes.annotate(recipe[i], xy=(x, y), xytext=(1.35*np.sign(x), 1.4*y), horizontalalignment=horizontalalignment, **kw)
+        axes.annotate(labels[i], xy=(x, y), xytext=(1.35*np.sign(x), 1.4*y), horizontalalignment=horizontalalignment, **kw)
 
     if ylabel:
         axes.set_title(ylabel)
