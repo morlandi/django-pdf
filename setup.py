@@ -18,7 +18,7 @@ readme = open('README.rst').read()
 history = open('CHANGELOG.rst').read().replace('.. :changelog:', '')
 
 
-setup(name='django-pdf',
+setup(name='django-weasypdf',
       version=version,
       description='A Django class-based view helper to generate PDF with WeasyPrint',
       long_description=readme + '\n\n' + history,

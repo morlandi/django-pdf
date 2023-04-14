@@ -3,8 +3,9 @@
 History
 =======
 
-v.....
+v0.1.0
 ------
+* Publish on Pypi as "django-weasypdf"
 * Support for 'line', 'bar', 'horizontalBar', 'pie', 'line', 'doughnut' plots
 
 v0.0.5

@@ -21,7 +21,14 @@ Install the package by running:
 
 .. code:: bash
 
+    pip install django-weasypdf
+
+or:
+
+.. code:: bash
+
     pip install git+https://github.com/morlandi/django-pdf
+
 
 You will probably build you own app in the project to provide derived Views
 and custom templates; for example:
