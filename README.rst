@@ -1,3 +1,11 @@
+**⚠️ Current status of this project**
+
+**This package has been renamed as `django-weasypdf` since v0.1.1, to avoid a conflict in PyPI, and moved to https://github.com/morlandi/django-weasypdf**.
+
+You are strongly suggested to switch to the new project https://github.com/morlandi/django-weasypdf, which is actively maintained and provides several improvements;
+
+however, all releases published in the current repo will rest in place forever.
+
 
 django-pdf
 ==========
